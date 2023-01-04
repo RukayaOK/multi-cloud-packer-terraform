@@ -1,0 +1,21 @@
+---
+- name: Insert Index Page
+  become: true
+  template:
+    src: html/website.html
+    dest: /usr/share/nginx/html/index.html
+
+- name: Set up default NGINX site
+  become: true
+  copy:
+    src: files/website.conf
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Restart NGINX to load site
+  become: true
+  service:
+    name: nginx
+    state: restarted

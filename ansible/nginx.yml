@@ -1,0 +1,6 @@
+---
+- name: Set up an NGINX Server 
+  hosts: all
+  roles:
+    - role: updates
+    - role: nginx

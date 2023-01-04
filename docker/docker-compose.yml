@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+
+  azure-terraform-packer:
+    image: 'terraformpacker:latest'
+    container_name: azure-terraform-packer
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+      target: azure
+    stdin_open: true
+    tty: true
+    working_dir: /src
+    environment:
+      - GITHUB_TOKEN
+      - ARM_SUBSCRIPTION_ID
+      - ARM_TENANT_ID
+      - ARM_CLIENT_ID
+      - ARM_CLIENT_SECRET
+      - ARM_ACCESS_KEY
+      - PKR_VAR_AZURE_CLIENT_ID
+      - PKR_VAR_AZURE_CLIENT_SECRET
+      - PKR_VAR_AZURE_SUBSCRIPTION_ID
+      - PKR_VAR_AZURE_TENANT_ID
+  
+  aws-terraform-packer:
+    image: 'terraformpacker:latest'
+    container_name: aws-terraform-packer
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+      target: aws
+    stdin_open: true
+    tty: true
+    working_dir: /src
+    environment:
+      - GITHUB_TOKEN
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - PKR_VAR_AWS_ACCESS_KEY
+      - PKR_VAR_AWS_SECRET_KEY
+  
+  gcp-terraform-packer:
+    image: 'terraformpacker:latest'
+    container_name: gcp-terraform-packer
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+      target: gcp
+    stdin_open: true
+    tty: true
+    working_dir: /src
+    environment:
+      - GITHUB_TOKEN
+      - TF_VAR_GOOGLE_APPLICATION_CREDENTIALS
+      - GOOGLE_APPLICATION_CREDENTIALS_FULL_PATH
+      - GOOGLE_CLIENT_EMAIL
+      - PKR_VAR_GCP_ACCOUNT_CREDENTIALS
+      - PKR_VAR_GCP_SERVICE_ACCOUNT_EMAIL
