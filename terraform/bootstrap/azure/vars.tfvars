@@ -10,12 +10,13 @@ packer_shared_image_gallery_resource_group = "packer-shared-image-gallery-rg"
 
 # Application
 packer_azuread_application = "packer-sp-app"
+image_delete_role          = "image-version-delete-role-2"
 
 # Key Vault
-packer_key_vault = "mypackerkv4rok"
+packer_key_vault = "mypackerkv42"
 
 # GitHub 
-github_repository  = "RukayaOK/packer-terraform-bootstrap"
+github_repository  = "RukayaOK/multi-cloud-packer-terraform"
 github_environment = "AZURE"
 
 # Azure Network

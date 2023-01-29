@@ -59,7 +59,7 @@ RUN unzip ${PACKER_DEST}/${PACKER_ZIPFILE} -d ${PACKER_DEST} \
 ###############################
 # Download Alpine Packages and Remove apk cache
 RUN apk add --update py3-pip python3-dev gcc libc-dev libffi-dev \ 
-    && apk add bash openssl ca-certificates \
+    && apk add bash openssl ca-certificates jq \
     && rm -rf /var/cache/apk/* 
 
 #######################

@@ -12,7 +12,7 @@ resource "google_compute_subnetwork" "subnet" {
 }
 
 resource "google_compute_firewall" "allow-internal" {
-  name    = var.firewall_name
+  name    = var.internal_firewall_name
   network = google_compute_network.vpc.name
   allow {
     protocol = "icmp"
@@ -32,19 +32,8 @@ resource "google_compute_firewall" "allow-internal" {
   source_ranges = [var.ip_cidr_range]
 }
 
-resource "google_compute_firewall" "allow-http" {
-  name    = "packer-fw-allow-http"
-  network = google_compute_network.vpc.name
-  allow {
-    protocol = "tcp"
-    ports    = ["80"]
-  }
-
-  source_ranges = concat([data.http.ip.response_body], var.allowed_ip_addresses)
-}
-
 resource "google_compute_firewall" "allow-ssh" {
-  name    = "packer-fw-allow-ssh"
+  name    = var.ssh_firewall_name 
   network = google_compute_network.vpc.name
   allow {
     protocol = "tcp"

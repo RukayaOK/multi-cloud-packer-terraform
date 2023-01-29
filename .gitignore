@@ -3,7 +3,9 @@ env.local.sh
 **auth.json
 **README.md
 .github/workflows/terraform/*
-tests/*
+.DS_Store
+*.pem
+**/cloudflare/*
 
 # Local .terraform directories
 **/.terraform/*

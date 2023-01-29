@@ -35,7 +35,7 @@ resource "azurerm_role_assignment" "packer_shared_image_gallery_contributor" {
 }
 
 resource "azurerm_role_definition" "delete_image_versions" {
-  name  = "image-version-delete-role"
+  name  = var.image_delete_role
   scope = data.azurerm_subscription.subscription.id
 
   permissions {

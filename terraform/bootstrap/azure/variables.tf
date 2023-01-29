@@ -3,6 +3,11 @@ variable "packer_azuread_application" {
   description = "Name of application and service principal that will deply packer images"
 }
 
+variable "image_delete_role" {
+  type        = string
+  description = "Name of custom role that can delete Images"
+}
+
 variable "location" {
   type        = string
   description = "Location where Azure resources will be deployed"

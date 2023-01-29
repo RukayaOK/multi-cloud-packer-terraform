@@ -31,9 +31,19 @@ variable "ip_cidr_range" {
   description = "IP CIDR name"
 }
 
-variable "firewall_name" {
+variable "internal_firewall_name" {
   type        = string
-  description = "Firewall name"
+  description = "Internal Firewall name"
+}
+
+variable "ssh_firewall_name" {
+  type        = string
+  description = "SSH Firewall name"
+}
+
+variable "http_firewall_name" {
+  type        = string
+  description = "HTTP Firewall name"
 }
 
 variable "allowed_ip_addresses" {
@@ -41,23 +51,28 @@ variable "allowed_ip_addresses" {
   description = "Allowed IP addresses"
 }
 
-# Service Account
-variable "packer_account_id" {
+variable "zone" {
   type        = string
-  description = "Service Account ID"
+  description = "description"
 }
 
-variable "packer_account_name" {
+
+variable "ip_name" {
   type        = string
-  description = "Service Account Name"
+  description = "description"
 }
 
-variable "github_repository" {
+variable "instance_name" {
   type        = string
-  description = "Name of the github repository"
+  description = "description"
 }
-variable "github_environment" {
+
+variable "instance_type" {
   type        = string
-  default     = ""
-  description = "Name of github envivonment for azure image pipeline. Only relevant for github organisations."
+  description = "description"
+}
+
+variable "image_name" {
+  type        = string
+  description = "description"
 }

@@ -5,7 +5,7 @@ private_virtual_network_with_public_ip = "true"
 vm_size                                = "Standard_DS2_v2"
 
 managed_image_resource_group_name = "packer-artifacts-rg"
-managed_image_name                = "nginx-packer-2022-12"
+managed_image_name                = "nginx-packer-2023-01"
 os_type                           = "Linux"
 image_publisher                   = "OpenLogic"
 image_offer                       = "CentOS"

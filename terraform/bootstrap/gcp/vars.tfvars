@@ -6,7 +6,9 @@ vpc_name      = "packer-vpc"
 subnet_name   = "packer-subnetwork"
 ip_cidr_range = "10.1.0.0/24"
 
-firewall_name = "packer-fw-allow-internal"
+internal_firewall_name = "packer-fw-allow-internal"
+
+ssh_firewall_name = "packer-fw-allow-ssh"
 
 allowed_ip_addresses = ["0.0.0.0/0"]
 
