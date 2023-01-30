@@ -134,7 +134,7 @@ ENV GCLOUD_VERSION=412.0.0 \
 ENV GCLOUD_ZIPFILE=google-cloud-cli-${GCLOUD_VERSION}-${GCLOUD_OSNAME}-${GCLOUD_OSARCH}.tar.gz
 
 # Download Google Cloud
-RUN wget -qP ${GCLOUD_DEST}/ https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${GCLOUD_ZIPFILE} \
+RUN wget -qP "${GCLOUD_DEST}"/ https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${GCLOUD_ZIPFILE} \
     && tar xzf ${GCLOUD_DEST}/${GCLOUD_ZIPFILE} -C ${GCLOUD_DEST} \
     && rm ${GCLOUD_DEST}/${GCLOUD_ZIPFILE} \
     && export PATH=$PATH:${GCLOUD_DEST}/google-cloud-sdk/bin

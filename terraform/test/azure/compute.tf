@@ -59,9 +59,7 @@ resource "azurerm_linux_virtual_machine" "main" {
   location              = azurerm_resource_group.main.location
   resource_group_name   = azurerm_resource_group.main.name
   network_interface_ids = [azurerm_network_interface.main.id]
-  size                  = "Standard_DS1_v2"
-  #delete_os_disk_on_termination    = var.delete_os_disk_on_termination
-  #delete_data_disks_on_termination = var.delete_data_disks_on_termination
+  size                  = var.vm_size
 
   source_image_id = data.azurerm_image.main.id
 

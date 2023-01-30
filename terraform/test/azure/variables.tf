@@ -79,16 +79,6 @@ variable "vm_size" {
   description = "description"
 }
 
-variable "delete_os_disk_on_termination" {
-  type        = bool
-  description = "description"
-}
-
-variable "delete_data_disks_on_termination" {
-  type        = bool
-  description = "description"
-}
-
 variable "image_name" {
   type        = string
   description = "description"
@@ -105,11 +95,6 @@ variable "storage_os_disk_name" {
 }
 
 variable "storage_os_disk_caching" {
-  type        = string
-  description = "description"
-}
-
-variable "storage_os_disk_create_option" {
   type        = string
   description = "description"
 }
