@@ -10,9 +10,11 @@ terraform {
       version = "3.2.1"
     }
   }
-  backend "gcs" {
-    bucket = "packer-terraform"
-    prefix = "packer/multi-cloud-tfsate"
+  backend "azurerm" {
+    resource_group_name  = "rok-terraform-rg-do-not-delete"
+    storage_account_name = "terrates901"
+    container_name       = "state"
+    key                  = "gcp-packer-test.tfstate"
   }
 }
 provider "google" {

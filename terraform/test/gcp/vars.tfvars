@@ -12,7 +12,9 @@ http_firewall_name = "multi-cloud-fw-allow-http"
 
 ssh_firewall_name = "multi-cloud-fw-allow-ssh"
 
-allowed_ip_addresses = []
+http_allowed_ip_addresses = ["0.0.0.0/0"]
+
+ssh_allowed_ip_addresses = []
 
 zone = "europe-west2-a"
 

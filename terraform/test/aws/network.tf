@@ -42,19 +42,6 @@ resource "aws_security_group" "main" {
   vpc_id      = aws_vpc.main.id
 }
 
-
-resource "aws_security_group_rule" "ingress_allow_icmp" {
-  type = "ingress"
-
-  protocol  = "icmp"
-  from_port = -1
-  to_port   = -1
-
-  cidr_blocks = concat(["${data.http.ip.response_body}/32"], var.allowed_ip_addresses)
-
-  security_group_id = aws_security_group.main.id
-}
-
 resource "aws_security_group_rule" "ingress_allow_ssh" {
   type = "ingress"
 
@@ -62,7 +49,7 @@ resource "aws_security_group_rule" "ingress_allow_ssh" {
   from_port = 22
   to_port   = 22
 
-  cidr_blocks = concat(["${data.http.ip.response_body}/32"], var.allowed_ip_addresses)
+  cidr_blocks = concat(["${data.http.ip.response_body}/32"], var.ssh_allowed_ip_addresses)
 
   security_group_id = aws_security_group.main.id
 }
@@ -74,7 +61,7 @@ resource "aws_security_group_rule" "ingress_allow_http" {
   from_port = 80
   to_port   = 80
 
-  cidr_blocks = concat(["${data.http.ip.response_body}/32"], var.allowed_ip_addresses)
+  cidr_blocks = var.http_allowed_ip_addresses
 
   security_group_id = aws_security_group.main.id
 }

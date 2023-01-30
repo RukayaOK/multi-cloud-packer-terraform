@@ -46,9 +46,14 @@ variable "http_firewall_name" {
   description = "HTTP Firewall name"
 }
 
-variable "allowed_ip_addresses" {
+variable "http_allowed_ip_addresses" {
   type        = list(string)
-  description = "Allowed IP addresses"
+  description = "CIDR block for security group http ingress"
+}
+
+variable "ssh_allowed_ip_addresses" {
+  type        = list(string)
+  description = "CIDR block for security group ssh ingress"
 }
 
 variable "zone" {

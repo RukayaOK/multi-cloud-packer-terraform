@@ -2,9 +2,9 @@ name: Build and Push Container Image to Registry
 
 on:
   workflow_dispatch:
-  push:
-    paths: 
-      - docker/*
+  # push:
+  #   paths:
+  #     - docker/*
 
 permissions:
   contents: 'read'

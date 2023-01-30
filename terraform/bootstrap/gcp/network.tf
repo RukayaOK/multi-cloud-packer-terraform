@@ -33,7 +33,7 @@ resource "google_compute_firewall" "allow-internal" {
 }
 
 resource "google_compute_firewall" "allow-ssh" {
-  name    = var.ssh_firewall_name 
+  name    = var.ssh_firewall_name
   network = google_compute_network.vpc.name
   allow {
     protocol = "tcp"

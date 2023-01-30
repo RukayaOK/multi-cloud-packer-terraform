@@ -12,7 +12,9 @@ subnet_address_space = ["10.11.0.0/24"]
 
 subnet_nsg_name = "multi-cloud-subnet-nsg"
 
-allowed_ip_addresses = []
+http_allowed_ip_addresses = ["0.0.0.0/0"]
+
+ssh_allowed_ip_addresses = []
 
 public_ip_name = "multi-cloud-vm-public-ip"
 
@@ -43,8 +45,4 @@ storage_os_disk_managed_disk_type = "Standard_LRS"
 
 vm_hostname       = "hostname"
 vm_admin_username = "testadmin"
-vm_admin_password = "Password1234!"
-
-disable_password_authentication = false
-
 

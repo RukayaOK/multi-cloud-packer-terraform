@@ -11,7 +11,9 @@ security_group_name = "multi-cloud-security-group"
 
 security_group_description = "Security Group for Multi Cloud"
 
-allowed_ip_addresses = ["51.182.202.178/32", "51.182.206.247/32"]
+ssh_allowed_ip_addresses = []
+
+http_allowed_ip_addresses = ["0.0.0.0/0"]
 
 egress_cidr_blocks = ["0.0.0.0/0"]
 

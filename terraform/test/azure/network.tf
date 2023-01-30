@@ -31,7 +31,7 @@ resource "azurerm_network_security_group" "main" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "80"
-    source_address_prefix      = "Internet"
+    source_address_prefixes    = var.http_allowed_ip_addresses
     destination_address_prefix = "VirtualNetwork"
   }
 
@@ -42,7 +42,7 @@ resource "azurerm_network_security_group" "main" {
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    source_address_prefixes    = concat([data.http.ip.response_body], var.allowed_ip_addresses)
+    source_address_prefixes    = concat([data.http.ip.response_body], var.ssh_allowed_ip_addresses)
     destination_port_range     = "22"
     destination_address_prefix = "VirtualNetwork"
   }

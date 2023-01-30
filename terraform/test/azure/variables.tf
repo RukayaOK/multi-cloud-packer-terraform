@@ -33,10 +33,16 @@ variable "subnet_nsg_name" {
   description = "description"
 }
 
-variable "allowed_ip_addresses" {
+variable "http_allowed_ip_addresses" {
   type        = list(string)
-  description = "description"
+  description = "CIDR block for security group http ingress"
 }
+
+variable "ssh_allowed_ip_addresses" {
+  type        = list(string)
+  description = "CIDR block for security group ssh ingress"
+}
+
 
 variable "public_ip_name" {
   type        = string
@@ -123,12 +129,3 @@ variable "vm_admin_username" {
   description = "description"
 }
 
-variable "vm_admin_password" {
-  type        = string
-  description = "description"
-}
-
-variable "disable_password_authentication" {
-  type        = bool
-  description = "description"
-}

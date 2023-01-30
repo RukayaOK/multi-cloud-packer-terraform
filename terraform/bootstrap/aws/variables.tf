@@ -76,7 +76,6 @@ variable "security_group_description" {
 variable "allowed_ip_addresses" {
   type        = list(string)
   description = "CIDR block for security group ingress"
-  default     = []
 }
 
 variable "egress_cidr_blocks" {

@@ -9,7 +9,7 @@ resource "google_compute_instance" "main" {
   name         = var.instance_name
   machine_type = var.instance_type
   zone         = var.zone
-  tags         = ["ssh","http"]
+  tags         = ["ssh", "http"]
 
   boot_disk {
     initialize_params {

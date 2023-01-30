@@ -10,7 +10,7 @@ reset:=$(shell tput sgr0)
 3. Set the Packer Builder type \
 4. Lookup the right Packer cloud variable file \
 5. Validate the cloud-specific terraform and packer variables that need to be set
-CLOUD_OPTS := azure aws gcp
+CLOUD_OPTS := azure aws gcp cloudflare
 ifneq ($(filter $(CLOUD),$(CLOUD_OPTS)),)
     $(info $(yellow)Cloud: $(CLOUD)$(reset))
 else
@@ -18,10 +18,17 @@ else
 endif
 
 BOOTSTRAP_OR_TEST_OPTS := bootstrap test
-ifneq ($(filter $(BOOTSTRAP_OR_TEST),$(CLOUD_OPTS)),)
+ifneq ($(filter $(BOOTSTRAP_OR_TEST),$(BOOTSTRAP_OR_TEST_OPTS)),)
     $(info $(yellow)Bootstrap or Test: $(BOOTSTRAP_OR_TEST)$(reset))
 else
     $(error $(red)Variable BOOTSTRAP_OR_TEST is not set to one of the following: $(BOOTSTRAP_OR_TEST_OPTS)$(reset))
+endif
+
+# cloudflare only run when testing images so BOOTSTRAP_OR_TEST=test if CLOUD=cloudflare
+ifeq ($(CLOUD),cloudflare)
+ifeq ($(BOOTSTRAP_OR_TEST),bootstrap)
+    $(error $(red)No Clouflare Terraform to Bootstrap$(reset))
+endif
 endif
 
 # Based on the CLOUD variable \
@@ -38,6 +45,8 @@ else ifeq ($(strip $(CLOUD)),gcp)
 	PACKER_BUILDER=googlecompute
 	TERRAFORM_VARS := TF_VAR_GOOGLE_APPLICATION_CREDENTIALS GOOGLE_APPLICATION_CREDENTIALS_FULL_PATH GOOGLE_CLIENT_EMAIL
 	PACKER_VARS := PKR_VAR_GCP_ACCOUNT_CREDENTIALS PKR_VAR_GCP_SERVICE_ACCOUNT_EMAIL
+else ifeq ($(strip $(CLOUD)),cloudflare)
+	TERRAFORM_VARS := CLOUDFLARE_API_TOKEN CLOUDFLARE_EMAIL
 endif
 
 # Ensure the RUNTIME_ENV variable is set. This is used to: \
@@ -60,16 +69,6 @@ help:					## Displays the help
 pre-commit:				## Run pre-commit checks
 	pre-commit run --all-files
 
-terra-env:				## Set Terraform Environment Variables
-ifeq ($(strip $(filter $(NOGOAL), $(MAKECMDGOALS))),)
-	$(foreach v,$(TERRAFORM_VARS),$(if $($v),$(info Variable $v defined),$(error Error: $v undefined)))
-endif
-
-packer-env:				## Set Packer Environment Variables
-ifeq ($(strip $(filter $(NOGOAL), $(MAKECMDGOALS))),)
-	$(foreach v,$(PACKER_VARS),$(if $($v),$(info Variable $v defined),$(error Error: $v undefined)))
-endif
-
 .PHONY: docker-build
 docker-build:					## Builds the docker image
 	docker-compose -f docker/docker-compose.yml build ${CLOUD}-terraform-packer
@@ -89,6 +88,11 @@ docker-restart: stop start			## Restart the docker container
 .PHONY: docker-exec
 docker-exec: docker-start				## Runs the docker container
 	docker exec -it ${CLOUD}-terraform-packer bash
+
+terra-env:				## Set Terraform Environment Variables
+ifeq ($(strip $(filter $(NOGOAL), $(MAKECMDGOALS))),)
+	$(foreach v,$(TERRAFORM_VARS),$(if $($v),$(info Variable $v defined),$(error Error: $v undefined)))
+endif
 
 .PHONY: terra-init
 terra-init: terra-env			## Initialises Terraform
@@ -155,6 +159,54 @@ else ifeq ($(strip $(RUNTIME_ENV)),container)
 	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} destroy -var-file vars.tfvars -auto-approve
 endif
 
+.PHONY: terra-plan-all
+terra-plan-all: 	## Plan terraform for all Cloud Providers
+ifeq ($(strip $(BOOTSTRAP_OR_TEST)),bootstrap)
+	@for cloud in azure aws gcp ; do \
+		export CLOUD=$$cloud ; \
+		echo $$CLOUD ; \
+		make terra-plan ; \
+    done
+else ifeq ($(strip $(BOOTSTRAP_OR_TEST)),tests)
+	@for cloud in azure aws gcp cloudflare ; do \
+		export CLOUD=$$cloud ; \
+		make terra-plan ; \
+    done
+endif
+
+.PHONY: terra-apply-all
+terra-apply-all: 	## Apply terraform for all Cloud Providers
+ifeq ($(strip $(BOOTSTRAP_OR_TEST)),bootstrap)
+	@for cloud in azure aws gcp ; do \
+		export CLOUD=$$cloud ; \
+		make terra-apply ; \
+    done
+else ifeq ($(strip $(BOOTSTRAP_OR_TEST)),tests)
+	@for cloud in azure aws gcp cloudflare ; do \
+		export CLOUD=$$cloud ; \
+		make terra-apply ; \
+    done
+endif
+
+.PHONY: terra-destroy-all
+terra-destroy-all: 	## Destroy terraform for all Cloud Providers
+ifeq ($(strip $(BOOTSTRAP_OR_TEST)),bootstrap)
+	@for cloud in azure aws gcp ; do \
+		export CLOUD=$$cloud ; \
+		make terra-destroy ; \
+    done
+else ifeq ($(strip $(BOOTSTRAP_OR_TEST)),tests)
+	@for cloud in cloudflare azure aws gcp ; do \
+		export CLOUD=$$cloud ; \
+		make terra-destroy ; \
+    done
+endif
+
+packer-env:				## Set Packer Environment Variables
+ifeq ($(strip $(filter $(NOGOAL), $(MAKECMDGOALS))),)
+	$(foreach v,$(PACKER_VARS),$(if $($v),$(info Variable $v defined),$(error Error: $v undefined)))
+endif
+
 packer-image: 
 # Ensure the IMAGE variable is set. This is used to: \
 Determine what packer image to build
@@ -166,7 +218,7 @@ else
 endif
 
 .PHONY: packer-init
-packer-init: packer-image packer-env	## Initialises Packer
+packer-init: packer-env packer-image 	## Initialises Packer
 ifeq ($(strip $(RUNTIME_ENV)),local)
 	packer init packer/${IMAGE}
 	packer fmt packer/${IMAGE}
@@ -209,17 +261,17 @@ else ifeq ($(strip $(RUNTIME_ENV)),container)
 endif
 
 .PHONY: packer-delete
-packer-delete: 		## Deletes Packer Image [ARG: IMAGE_ID="<Image ID>"]
+packer-delete: 		## Deletes Packer Image [ARG: IMAGE_NAME="<Image Name>"]
 ifeq ($(strip $(RUNTIME_ENV)),local)
-	sh ./helpers/delete-image.sh delete_${CLOUD}_image ${CLOUD} $$IMAGE_ID
+	sh ./helpers/delete_image.sh delete_${CLOUD}_image ${CLOUD} $$IMAGE_NAME
 else ifeq ($(strip $(RUNTIME_ENV)),container)
-	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/delete-image.sh delete_${CLOUD}_image $$IMAGE_ID
+	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/delete_image.sh delete_${CLOUD}_image $$IMAGE_NAME
 endif
 	
 .PHONY: packer-variables
-packer-variables: 		## Deletes Packer Image [ARG: IMAGE_ID="<Image ID>"]
+packer-variables: 		## Get variables for packer
 ifeq ($(strip $(RUNTIME_ENV)),local)
-	sh ./helpers/get-packer-variables.sh get_${CLOUD}_packer_variables ${CLOUD} 
+	sh ./helpers/get_packer_variables.sh get_${CLOUD}_packer_variables ${CLOUD}
 else ifeq ($(strip $(RUNTIME_ENV)),container)
-	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/delete-image.sh delete-${CLOUD}-image $$IMAGE_ID
+	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/get_packer_variables.sh get_${CLOUD}_packer_variables ${CLOUD}
 endif

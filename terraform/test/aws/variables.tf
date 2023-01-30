@@ -28,10 +28,14 @@ variable "security_group_description" {
   description = "Description of the security group"
 }
 
-variable "allowed_ip_addresses" {
+variable "http_allowed_ip_addresses" {
   type        = list(string)
-  description = "CIDR block for security group ingress"
-  default     = []
+  description = "CIDR block for security group http ingress"
+}
+
+variable "ssh_allowed_ip_addresses" {
+  type        = list(string)
+  description = "CIDR block for security group ssh ingress"
 }
 
 variable "egress_cidr_blocks" {
@@ -44,12 +48,12 @@ variable "key_pair_name" {
   description = "AWS Key Pair Name"
 }
 
-variable ami_id {
-  type = string
+variable "ami_id" {
+  type        = string
   description = "description"
 }
 
-variable instance_type {
-  type = string
+variable "instance_type" {
+  type        = string
   description = "description"
 }

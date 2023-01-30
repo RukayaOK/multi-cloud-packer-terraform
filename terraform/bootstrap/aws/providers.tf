@@ -10,10 +10,11 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket = "packerbucket123"
-    key    = "this"
-    region = "us-west-2"
+  backend "azurerm" {
+    resource_group_name  = "rok-terraform-rg-do-not-delete"
+    storage_account_name = "terrates901"
+    container_name       = "state"
+    key                  = "aws-packer-bootstrap.tfstate"
   }
 
 }

@@ -40,7 +40,7 @@ resource "google_compute_firewall" "allow-http" {
     ports    = ["80"]
   }
 
-  source_ranges = concat([data.http.ip.response_body], var.allowed_ip_addresses)
+  source_ranges = var.http_allowed_ip_addresses
 }
 
 resource "google_compute_firewall" "allow-ssh" {
@@ -51,6 +51,6 @@ resource "google_compute_firewall" "allow-ssh" {
     ports    = ["22"]
   }
 
-  source_ranges = concat([data.http.ip.response_body], var.allowed_ip_addresses)
+  source_ranges = concat([data.http.ip.response_body], var.ssh_allowed_ip_addresses)
 }
 

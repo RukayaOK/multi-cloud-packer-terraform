@@ -2,7 +2,7 @@ terraform {
   required_version = ">= 0.12"
   required_providers {
     google = {
-      source = "hashicorp/google"
+      source  = "hashicorp/google"
       version = "4.50.0"
     }
     http = {
@@ -10,9 +10,11 @@ terraform {
       version = "3.2.1"
     }
   }
-  backend "gcs" {
-    bucket = "packer-terraform"
-    prefix = "packer/bootstrap-tfsate"
+  backend "azurerm" {
+    resource_group_name  = "rok-terraform-rg-do-not-delete"
+    storage_account_name = "terrates901"
+    container_name       = "state"
+    key                  = "gcp-packer-bootstrap.tfstate"
   }
 }
 provider "google" {

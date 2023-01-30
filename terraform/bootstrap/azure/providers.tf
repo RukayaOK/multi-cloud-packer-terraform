@@ -18,14 +18,11 @@ terraform {
       version = "3.2.1"
     }
   }
-
-  #backend "local" {}
-
   backend "azurerm" {
     resource_group_name  = "rok-terraform-rg-do-not-delete"
     storage_account_name = "terrates901"
     container_name       = "state"
-    key                  = "packer.tfstate"
+    key                  = "azure-packer-bootstrap.tfstate"
   }
 }
 

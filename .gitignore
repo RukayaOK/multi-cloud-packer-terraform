@@ -5,7 +5,6 @@ env.local.sh
 .github/workflows/terraform/*
 .DS_Store
 *.pem
-**/cloudflare/*
 
 # Local .terraform directories
 **/.terraform/*
