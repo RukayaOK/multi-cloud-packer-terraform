@@ -57,3 +57,18 @@ services:
       - GOOGLE_CLIENT_EMAIL
       - PKR_VAR_GCP_ACCOUNT_CREDENTIALS
       - PKR_VAR_GCP_SERVICE_ACCOUNT_EMAIL
+
+  cloudflare-terraform-packer:
+    image: 'terraformpacker:latest'
+    container_name: base-terraform-packer
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+      target: base
+    stdin_open: true
+    tty: true
+    working_dir: /src
+    environment:
+      - CLOUDFLARE_API_TOKEN
+      - CLOUDFLARE_EMAIL
+      - TF_VAR_CLOUDFLARE_ZONE_ID

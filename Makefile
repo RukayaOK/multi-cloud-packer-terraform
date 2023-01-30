@@ -161,18 +161,11 @@ endif
 
 .PHONY: terra-plan-all
 terra-plan-all: 	## Plan terraform for all Cloud Providers
-ifeq ($(strip $(BOOTSTRAP_OR_TEST)),bootstrap)
 	@for cloud in azure aws gcp ; do \
 		export CLOUD=$$cloud ; \
 		echo $$CLOUD ; \
 		make terra-plan ; \
     done
-else ifeq ($(strip $(BOOTSTRAP_OR_TEST)),tests)
-	@for cloud in azure aws gcp cloudflare ; do \
-		export CLOUD=$$cloud ; \
-		make terra-plan ; \
-    done
-endif
 
 .PHONY: terra-apply-all
 terra-apply-all: 	## Apply terraform for all Cloud Providers
@@ -181,7 +174,7 @@ ifeq ($(strip $(BOOTSTRAP_OR_TEST)),bootstrap)
 		export CLOUD=$$cloud ; \
 		make terra-apply ; \
     done
-else ifeq ($(strip $(BOOTSTRAP_OR_TEST)),tests)
+else ifeq ($(strip $(BOOTSTRAP_OR_TEST)),test)
 	@for cloud in azure aws gcp cloudflare ; do \
 		export CLOUD=$$cloud ; \
 		make terra-apply ; \
@@ -195,7 +188,7 @@ ifeq ($(strip $(BOOTSTRAP_OR_TEST)),bootstrap)
 		export CLOUD=$$cloud ; \
 		make terra-destroy ; \
     done
-else ifeq ($(strip $(BOOTSTRAP_OR_TEST)),tests)
+else ifeq ($(strip $(BOOTSTRAP_OR_TEST)),test)
 	@for cloud in cloudflare azure aws gcp ; do \
 		export CLOUD=$$cloud ; \
 		make terra-destroy ; \
@@ -236,28 +229,12 @@ else ifeq ($(strip $(RUNTIME_ENV)),container)
 	docker exec -it ${CLOUD}-terraform-packer packer validate -only=${PACKER_BUILDER} -var-file=packer/${IMAGE}/variables.${CLOUD}.json packer/${IMAGE}/packer.json
 endif
 
-.PHONY: packer-validate-all
-packer-validate-all: packer-init		## Validate Packer Image for all Cloud Providers
-ifeq ($(strip $(RUNTIME_ENV)),local)
-	packer validate -var-file=packer/${IMAGE}/azure.pkrvars.hcl -var-file=packer/${IMAGE}/aws.pkrvars.hcl -var-file=packer/${IMAGE}/gcp.pkrvars.hcl packer/${IMAGE}
-else ifeq ($(strip $(RUNTIME_ENV)),container)
-	docker exec -it ${CLOUD}-terraform-packer packer validate -var-file=packer/${IMAGE}/azure.pkrvars.hcl -var-file=packer/${IMAGE}/aws.pkrvars.hcl -var-file=packer/${IMAGE}/gcp.pkrvars.hcl packer/${IMAGE}
-endif
-
 .PHONY: packer-build
 packer-build: packer-validate		## Builds Packer Image
 ifeq ($(strip $(RUNTIME_ENV)),local)
 	packer build -only=${PACKER_BUILDER}.${IMAGE} -var-file=packer/${IMAGE}/${CLOUD}.pkrvars.hcl packer/${IMAGE}
 else ifeq ($(strip $(RUNTIME_ENV)),container)
 	docker exec -it ${CLOUD}-terraform-packer packer build -only=${PACKER_BUILDER} -var-file=packer/${IMAGE}/${CLOUD}.pkrvars.hcl packer/${IMAGE}
-endif
-
-.PHONY: packer-build-all
-packer-build-all: packer-validate-all		## Builds Packer Image for all Cloud Providers
-ifeq ($(strip $(RUNTIME_ENV)),local)
-	packer build -var-file=packer/${IMAGE}/azure.pkrvars.hcl -var-file=packer/${IMAGE}/aws.pkrvars.hcl -var-file=packer/${IMAGE}/gcp.pkrvars.hcl packer/${IMAGE}
-else ifeq ($(strip $(RUNTIME_ENV)),container)
-	docker exec -it ${CLOUD}-terraform-packer packer build -var-file=packer/${IMAGE}/azure.pkrvars.hcl -var-file=packer/${IMAGE}/aws.pkrvars.hcl -var-file=packer/${IMAGE}/gcp.pkrvars.hcl packer/${IMAGE}
 endif
 
 .PHONY: packer-delete
@@ -267,6 +244,22 @@ ifeq ($(strip $(RUNTIME_ENV)),local)
 else ifeq ($(strip $(RUNTIME_ENV)),container)
 	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/delete_image.sh delete_${CLOUD}_image $$IMAGE_NAME
 endif
+
+.PHONY: packer-validate-all
+packer-validate-all: packer-init		## Validate Packer Image for all Cloud Providers
+ifeq ($(strip $(RUNTIME_ENV)),local)
+	packer validate -var-file=packer/${IMAGE}/azure.pkrvars.hcl -var-file=packer/${IMAGE}/aws.pkrvars.hcl -var-file=packer/${IMAGE}/gcp.pkrvars.hcl packer/${IMAGE}
+else ifeq ($(strip $(RUNTIME_ENV)),container)
+	docker exec -it ${CLOUD}-terraform-packer packer validate -var-file=packer/${IMAGE}/azure.pkrvars.hcl -var-file=packer/${IMAGE}/aws.pkrvars.hcl -var-file=packer/${IMAGE}/gcp.pkrvars.hcl packer/${IMAGE}
+endif
+
+.PHONY: packer-build-all
+packer-build-all: packer-validate-all		## Builds Packer Image for all Cloud Providers
+ifeq ($(strip $(RUNTIME_ENV)),local)
+	packer build -var-file=packer/${IMAGE}/azure.pkrvars.hcl -var-file=packer/${IMAGE}/aws.pkrvars.hcl -var-file=packer/${IMAGE}/gcp.pkrvars.hcl packer/${IMAGE}
+else ifeq ($(strip $(RUNTIME_ENV)),container)
+	docker exec -it ${CLOUD}-terraform-packer packer build -var-file=packer/${IMAGE}/azure.pkrvars.hcl -var-file=packer/${IMAGE}/aws.pkrvars.hcl -var-file=packer/${IMAGE}/gcp.pkrvars.hcl packer/${IMAGE}
+endif
 	
 .PHONY: packer-variables
 packer-variables: 		## Get variables for packer
@@ -275,3 +268,10 @@ ifeq ($(strip $(RUNTIME_ENV)),local)
 else ifeq ($(strip $(RUNTIME_ENV)),container)
 	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/get_packer_variables.sh get_${CLOUD}_packer_variables ${CLOUD}
 endif
+
+.PHONY: packer-variables-all
+packer-variables-all: 		## Get variables for packer
+	@for cloud in azure aws gcp ; do \
+		export CLOUD=$$cloud ; \
+		make packer-variables ; \
+    done

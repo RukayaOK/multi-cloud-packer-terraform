@@ -119,6 +119,11 @@ variable "storage_os_disk_managed_disk_type" {
   description = "description"
 }
 
+variable "key_pair_name" {
+  type        = string
+  description = "Azure Key Pair Name"
+}
+
 variable "vm_hostname" {
   type        = string
   description = "description"

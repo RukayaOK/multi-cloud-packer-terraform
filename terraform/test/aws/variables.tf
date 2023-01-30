@@ -48,7 +48,12 @@ variable "key_pair_name" {
   description = "AWS Key Pair Name"
 }
 
-variable "ami_id" {
+variable "ami_owner" {
+  type        = string
+  description = "description"
+}
+
+variable "ami_name_filter" {
   type        = string
   description = "description"
 }

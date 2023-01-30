@@ -55,23 +55,20 @@ resource "azurerm_network_interface" "main" {
 # }
 
 resource "azurerm_linux_virtual_machine" "main" {
-  name                             = var.vm_name
-  location                         = azurerm_resource_group.main.location
-  resource_group_name              = azurerm_resource_group.main.name
-  network_interface_ids            = [azurerm_network_interface.main.id]
-  size                             = "Standard_DS1_v2"
-  delete_os_disk_on_termination    = var.delete_os_disk_on_termination
-  delete_data_disks_on_termination = var.delete_data_disks_on_termination
+  name                  = var.vm_name
+  location              = azurerm_resource_group.main.location
+  resource_group_name   = azurerm_resource_group.main.name
+  network_interface_ids = [azurerm_network_interface.main.id]
+  size                  = "Standard_DS1_v2"
+  #delete_os_disk_on_termination    = var.delete_os_disk_on_termination
+  #delete_data_disks_on_termination = var.delete_data_disks_on_termination
 
-  storage_image_reference {
-    id = data.azurerm_image.main.id
-  }
+  source_image_id = data.azurerm_image.main.id
 
   os_disk {
-    name              = var.storage_os_disk_name
-    caching           = var.storage_os_disk_caching
-    create_option     = var.storage_os_disk_create_option
-    managed_disk_type = var.storage_os_disk_managed_disk_type
+    name                 = var.storage_os_disk_name
+    caching              = var.storage_os_disk_caching
+    storage_account_type = var.storage_os_disk_managed_disk_type
   }
 
   computer_name                   = var.vm_hostname

@@ -8,9 +8,9 @@ output "packer_igw_id" {
   description = "Internet Gateway ID"
 }
 
-output "packer_subnet_ids" {
-  value       = aws_subnet.packer.*.id
-  description = "List of public subnet IDs"
+output "packer_subnet_id" {
+  value       = tolist(aws_subnet.packer[*].id)[0]
+  description = "List of public subnet ID"
 }
 
 output "packer_route" {

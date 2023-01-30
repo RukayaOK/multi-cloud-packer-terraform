@@ -7,8 +7,8 @@ communicator = {
 }
 
 instance_type = "t3.micro"
-vpc_id        = "vpc-0a0950e998a1cb217"
-subnet_id     = "subnet-0ba8ab7330a404d7a"
+vpc_id        = "vpc-07921cda614645870"
+subnet_id     = "subnet-09a6cbe53c7678e66"
 
 ami_name = "packer-image-name"
 

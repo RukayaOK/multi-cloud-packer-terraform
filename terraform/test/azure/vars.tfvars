@@ -43,6 +43,7 @@ storage_os_disk_caching           = "ReadWrite"
 storage_os_disk_create_option     = "FromImage"
 storage_os_disk_managed_disk_type = "Standard_LRS"
 
+key_pair_name = "multi-cloud-key-pair"
+
 vm_hostname       = "hostname"
 vm_admin_username = "testadmin"
-

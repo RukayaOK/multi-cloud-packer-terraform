@@ -13,7 +13,7 @@ ENV TERRAFORM_VERSION=1.2.1 \
 ENV TERRAFORM_ZIPFILE=terraform_${TERRAFORM_VERSION}_${TERRAFORM_OSNAME}_${TERRAFORM_OSARCH}.zip
 
 # Download Terraform 
-RUN wget -P ${TERRAFORM_DEST}/ https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/${TERRAFORM_ZIPFILE}
+RUN wget -qP ${TERRAFORM_DEST}/ https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/${TERRAFORM_ZIPFILE}
 
 # Unzip Terraform and Remove zip file
 RUN unzip ${TERRAFORM_DEST}/${TERRAFORM_ZIPFILE} -d ${TERRAFORM_DEST} \
@@ -30,7 +30,7 @@ ENV TFLINT_VERSION=0.43.0 \
     TFLINT_DEST=/usr/local/bin
 ENV TFLINT_ZIPFILE=tflint_${TFLINT_OSNAME}_${TFLINT_OSARCH}.zip
 
-RUN wget -P ${TFLINT_DEST}/ https://github.com/terraform-linters/tflint/releases/download/v${TFLINT_VERSION}/${TFLINT_ZIPFILE}
+RUN wget -qP ${TFLINT_DEST}/ https://github.com/terraform-linters/tflint/releases/download/v${TFLINT_VERSION}/${TFLINT_ZIPFILE}
 
 # Unzip Terraform and Remove zip file
 RUN unzip ${TFLINT_DEST}/${TFLINT_ZIPFILE} -d ${TFLINT_DEST} \
@@ -48,7 +48,7 @@ ENV PACKER_VERSION=1.8.5 \
 ENV PACKER_ZIPFILE=packer_${PACKER_VERSION}_${PACKER_OSNAME}_${PACKER_OSARCH}.zip
 
 # Download Packer
-RUN wget -P ${PACKER_DEST}/ https://releases.hashicorp.com/packer/${PACKER_VERSION}/${PACKER_ZIPFILE}
+RUN wget -qP ${PACKER_DEST}/ https://releases.hashicorp.com/packer/${PACKER_VERSION}/${PACKER_ZIPFILE}
 
 # Unzip Terraform and Remove zip file
 RUN unzip ${PACKER_DEST}/${PACKER_ZIPFILE} -d ${PACKER_DEST} \
@@ -118,8 +118,8 @@ FROM base as aws
 ENV SETUP_TOOLS=64.0.1
 ENV AWS_CLI_VERSION=2.9.2
 # Install AWS CLI 
-RUN pip3 install --no-cache-dir setuptools==${SETUP_TOOLS}
-RUN pip3 install --no-cache-dir awscli==${AWS_CLI_VERSION}
+RUN pip3 install --no-cache-dir setuptools==${SETUP_TOOLS} \
+    && pip3 install --no-cache-dir awscli==${AWS_CLI_VERSION}
 
 #########################
 ####### GCP LAYER #######
@@ -134,7 +134,7 @@ ENV GCLOUD_VERSION=412.0.0 \
 ENV GCLOUD_ZIPFILE=google-cloud-cli-${GCLOUD_VERSION}-${GCLOUD_OSNAME}-${GCLOUD_OSARCH}.tar.gz
 
 # Download Google Cloud
-RUN wget -P ${GCLOUD_DEST}/ https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${GCLOUD_ZIPFILE} \
+RUN wget -qP ${GCLOUD_DEST}/ https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${GCLOUD_ZIPFILE} \
     && tar xzf ${GCLOUD_DEST}/${GCLOUD_ZIPFILE} -C ${GCLOUD_DEST} \
     && rm ${GCLOUD_DEST}/${GCLOUD_ZIPFILE} \
     && export PATH=$PATH:${GCLOUD_DEST}/google-cloud-sdk/bin

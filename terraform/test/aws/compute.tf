@@ -5,7 +5,7 @@ resource "aws_eip" "main" {
 
 # Create EC2 Instances for Web Server
 resource "aws_instance" "main" {
-  ami                         = var.ami_id
+  ami                         = data.aws_ami.main.id
   instance_type               = var.instance_type
   subnet_id                   = aws_subnet.main.id
   vpc_security_group_ids      = [aws_security_group.main.id, aws_security_group.main.id]

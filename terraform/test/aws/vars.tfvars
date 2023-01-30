@@ -23,3 +23,7 @@ ami_id = "ami-0efa4e295b4c8c729"
 key_pair_name = "multi-cloud-key-pair"
 
 instance_type = "t2.micro"
+
+ami_owner = "self"
+
+ami_name_filter = "packer-image-name-"
