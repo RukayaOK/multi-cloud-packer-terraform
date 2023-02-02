@@ -51,7 +51,7 @@ endif
 
 # Ensure the RUNTIME_ENV variable is set. This is used to: \
 Determine whether to run commands locally, in container or in pipeline
-RUNTIME_ENV_OPTS := local container pipeline
+RUNTIME_ENV_OPTS := local container
 ifneq ($(filter $(RUNTIME_ENV),$(RUNTIME_ENV_OPTS)),)
     $(info $(yellow)Runtime Environment: $(RUNTIME_ENV)$(reset))
 else
