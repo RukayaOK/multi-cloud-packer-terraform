@@ -37,7 +37,7 @@ function gcp_login () {
     _success "Logged out of GCP"
 
     _information "Logging into GCP..."
-    gcloud auth activate-service-account --key-file=$PWD/$GOOGLE_APPLICATION_CREDENTIALS_FULL_PATH
+    gcloud auth activate-service-account --key-file=$TERRAFORM_PATH/$TF_VAR_GOOGLE_APPLICATION_CREDENTIALS
     _success "Logged into GCP"
 }
 

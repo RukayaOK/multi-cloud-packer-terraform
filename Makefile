@@ -58,6 +58,12 @@ else
     $(error $(red)Variable RUNTIME_ENV is not set to one of the following: $(RUNTIME_ENV_OPTS)$(reset))
 endif
 
+ifeq ($(BOOTSTRAP_OR_TEST),bootstrap)
+	TERRAFORM_PATH=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}
+else ifeq ($(strip $(TERRAFORM_PATH)),test)
+	TERRAFORM_PATH=terraform/${BOOTSTRAP_OR_TEST}/${IMAGE}/${CLOUD}
+endif
+
 
 .PHONY: help
 help:					## Displays the help
@@ -97,66 +103,66 @@ endif
 .PHONY: terra-init
 terra-init: terra-env			## Initialises Terraform
 ifeq ($(strip $(RUNTIME_ENV)),local)
-	terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} init
-	terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} fmt --recursive
+	terraform -chdir=${TERRAFORM_PATH} init
+	terraform -chdir=${TERRAFORM_PATH} fmt --recursive
 else ifeq ($(strip $(RUNTIME_ENV)),container)
 	make restart
-	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} init
+	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=${TERRAFORM_PATH} init
 endif
 
 .PHONY: terra-plan
 terra-plan: terra-init			## Plans Terraform
 ifeq ($(strip $(RUNTIME_ENV)),local)
-	terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} validate
-	terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} plan -out=plan/tfplan.binary -var-file vars.tfvars
+	terraform -chdir=${TERRAFORM_PATH} validate
+	terraform -chdir=${TERRAFORM_PATH} plan -out=plan/tfplan.binary -var-file vars.tfvars
 else ifeq ($(strip $(RUNTIME_ENV)),container)
-	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} validate
-	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} plan -out=plan/tfplan.binary -var-file vars.tfvars
+	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=${TERRAFORM_PATH} validate
+	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=${TERRAFORM_PATH} plan -out=plan/tfplan.binary -var-file vars.tfvars
 endif
 
 .PHONY: terra-sec
 terra-sec: terra-plan			## Security Check Terraform
 ifeq ($(strip $(RUNTIME_ENV)),local)
-	terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} show -json plan/tfplan.binary > terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/plan/tfplan.json
-	checkov -f terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/plan/tfplan.json
+	terraform -chdir=${TERRAFORM_PATH} show -json plan/tfplan.binary > ${TERRAFORM_PATH}/plan/tfplan.json
+	checkov -f ${TERRAFORM_PATH}/plan/tfplan.json
 else ifeq ($(strip $(RUNTIME_ENV)),container)
-	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} show -json plan/tfplan.binary > terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/plan/tfplan.json
-	docker exec -it ${CLOUD}-terraform-packer checkov -f terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/plan/tfplan.json
+	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=${TERRAFORM_PATH} show -json plan/tfplan.binary > ${TERRAFORM_PATH}/plan/tfplan.json
+	docker exec -it ${CLOUD}-terraform-packer checkov -f ${TERRAFORM_PATH}/plan/tfplan.json
 endif
 
 .PHONY: terra-lint
 terra-lint: 				## Lint Terraform
 ifeq ($(strip $(RUNTIME_ENV)),local)
-	tflint terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/ --init --config=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/.tflint.hcl --var-file=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/vars.tfvars
-	tflint terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/ --config=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/.tflint.hcl --var-file=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/vars.tfvars
+	tflint ${TERRAFORM_PATH}/ --init --config=${TERRAFORM_PATH}/.tflint.hcl --var-file=${TERRAFORM_PATH}/vars.tfvars
+	tflint ${TERRAFORM_PATH}/ --config=${TERRAFORM_PATH}/.tflint.hcl --var-file=${TERRAFORM_PATH}/vars.tfvars
 else ifeq ($(strip $(RUNTIME_ENV)),container)
 	make terra-init 
-	docker exec -it ${CLOUD}-terraform-packer tflint terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/ --init --config=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/.tflint.hcl --var-file=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/vars.tfvars
-	docker exec -it ${CLOUD}-terraform-packer tflint terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/ --config=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/.tflint.hcl --var-file=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD}/vars.tfvars
+	docker exec -it ${CLOUD}-terraform-packer tflint ${TERRAFORM_PATH}/ --init --config=${TERRAFORM_PATH}/.tflint.hcl --var-file=${TERRAFORM_PATH}/vars.tfvars
+	docker exec -it ${CLOUD}-terraform-packer tflint ${TERRAFORM_PATH}/ --config=${TERRAFORM_PATH}/.tflint.hcl --var-file=${TERRAFORM_PATH}/vars.tfvars
 endif
 
 .PHONY: terra-apply
 terra-apply: terra-plan			## Apply Terraform
 ifeq ($(strip $(RUNTIME_ENV)),local)
-	terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} apply plan/tfplan.binary
+	terraform -chdir=${TERRAFORM_PATH} apply plan/tfplan.binary
 else ifeq ($(strip $(RUNTIME_ENV)),container)
-	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} apply plan/tfplan.binary
+	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=${TERRAFORM_PATH} apply plan/tfplan.binary
 endif
 
 .PHONY: terra-output
 terra-output: terra-init		## Output Terraform
 ifeq ($(strip $(RUNTIME_ENV)),local)
-	terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} output
+	terraform -chdir=${TERRAFORM_PATH} output
 else ifeq ($(strip $(RUNTIME_ENV)),container)
-	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} output
+	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=${TERRAFORM_PATH} output
 endif
 
 .PHONY: terra-destroy
 terra-destroy: terra-init		## Destroy Terraform
 ifeq ($(strip $(RUNTIME_ENV)),local)
-	terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} destroy -var-file vars.tfvars -auto-approve
+	terraform -chdir=${TERRAFORM_PATH} destroy -var-file vars.tfvars -auto-approve
 else ifeq ($(strip $(RUNTIME_ENV)),container)
-	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=terraform/${BOOTSTRAP_OR_TEST}/${CLOUD} destroy -var-file vars.tfvars -auto-approve
+	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=${TERRAFORM_PATH} destroy -var-file vars.tfvars -auto-approve
 endif
 
 .PHONY: terra-plan-all
@@ -240,7 +246,7 @@ endif
 .PHONY: packer-delete
 packer-delete: 		## Deletes Packer Image [ARG: IMAGE_NAME="<Image Name>"]
 ifeq ($(strip $(RUNTIME_ENV)),local)
-	sh ./helpers/delete_image.sh delete_${CLOUD}_image ${CLOUD} $$IMAGE_NAME
+	sh ./helpers/delete_image.sh delete_${CLOUD}_image ${CLOUD} ${TERRAFORM_PATH} $$IMAGE_NAME $$
 else ifeq ($(strip $(RUNTIME_ENV)),container)
 	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/delete_image.sh delete_${CLOUD}_image $$IMAGE_NAME
 endif

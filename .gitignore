@@ -6,6 +6,7 @@ env.local.sh
 .DS_Store
 *.pem
 
+
 # Local .terraform directories
 **/.terraform/*
 

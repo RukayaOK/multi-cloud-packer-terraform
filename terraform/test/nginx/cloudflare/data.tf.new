@@ -1,0 +1,15 @@
+data "azurerm_public_ip" "main" {
+  name                = var.azure_public_ip_name
+  resource_group_name = var.azure_public_ip_resource_group
+}
+
+data "aws_eip" "main" {
+  filter {
+    name   = "tag:Name"
+    values = [var.aws_public_ip_name]
+  }
+}
+
+data "google_compute_address" "main" {
+  name = var.gcp_public_ip_name
+}

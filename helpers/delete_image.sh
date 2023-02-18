@@ -71,7 +71,7 @@ function delete_azure_image() {
 
 
 function delete_gcp_image() {
-    gcp_login
+    gcp_login ${TERRAFORM_PATH}
     echo 'Y' | gcloud compute images delete "${IMAGE_NAME}"
     gcp_logout
 }
