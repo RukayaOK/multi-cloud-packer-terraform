@@ -2,7 +2,7 @@ version: '3.8'
 services:
 
   azure-terraform-packer:
-    image: 'terraformpacker:latest'
+    image: 'azureterraformpacker:latest'
     container_name: azure-terraform-packer
     build:
       context: ../
@@ -24,7 +24,7 @@ services:
       - PKR_VAR_AZURE_TENANT_ID
   
   aws-terraform-packer:
-    image: 'terraformpacker:latest'
+    image: 'awsterraformpacker:latest'
     container_name: aws-terraform-packer
     build:
       context: ../
@@ -41,7 +41,7 @@ services:
       - PKR_VAR_AWS_SECRET_KEY
   
   gcp-terraform-packer:
-    image: 'terraformpacker:latest'
+    image: 'gcpterraformpacker:latest'
     container_name: gcp-terraform-packer
     build:
       context: ../

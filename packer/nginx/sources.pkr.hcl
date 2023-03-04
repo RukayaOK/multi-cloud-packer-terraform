@@ -10,13 +10,13 @@ source "azure-arm" "nginx" {
   virtual_network_subnet_name            = "${var.virtual_network_subnet_name}"
   private_virtual_network_with_public_ip = "${var.private_virtual_network_with_public_ip}"
   vm_size                                = "${var.vm_size}"
+  os_type                           = "${var.os_type}"
 
   image_offer                       = "${var.image_offer}"
   image_publisher                   = "${var.image_publisher}"
   image_sku                         = "${var.image_sku}"
   managed_image_name                = "${var.managed_image_name}"
   managed_image_resource_group_name = "${var.managed_image_resource_group_name}"
-  os_type                           = "${var.os_type}"
 
   azure_tags = {
     department = "${var.azure_tags_department}"

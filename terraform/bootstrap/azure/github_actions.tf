@@ -22,3 +22,32 @@ resource "github_actions_secret" "packer_tenant_id" {
   encrypted_value = base64encode(data.azurerm_client_config.current.tenant_id)
 }
 
+/*
+resource "github_actions_environment_secret" "packer_client_id" {
+  repository      = data.github_repository.packer_github_repo.name
+  environment     = var.github_environment
+  secret_name     = "PKR_VAR_AZURE_CLIENT_ID"
+  encrypted_value = base64encode(azuread_application.packer.application_id)
+}
+
+resource "github_actions_environment_secret" "packer_client_secret" {
+  repository      = data.github_repository.packer_github_repo.name
+  environment     = var.github_environment
+  secret_name     = "PKR_VAR_AZURE_CLIENT_SECRET"
+  encrypted_value = base64encode(azuread_service_principal_password.packer.value)
+}
+
+resource "github_actions_environment_secret" "packer_subscription_id" {
+  repository      = data.github_repository.packer_github_repo.name
+  environment     = var.github_environment
+  secret_name     = "PKR_VAR_AZURE_SUBSCRIPTION_ID"
+  encrypted_value = base64encode(data.azurerm_client_config.current.subscription_id)
+}
+
+resource "github_actions_environment_secret" "packer_tenant_id" {
+  repository      = data.github_repository.packer_github_repo.name
+  environment     = var.github_environment
+  secret_name     = "PKR_VAR_AZURE_TENANT_ID"
+  encrypted_value = base64encode(data.azurerm_client_config.current.tenant_id)
+}
+*/

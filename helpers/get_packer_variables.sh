@@ -9,8 +9,8 @@ source "${SCRIPT_DIR}"/_helpers.sh
 
 function get_azure_packer_variables() {
     _information "Retrieving variables for Azure Packer..."
-    PKR_VAR_AZURE_CLIENT_ID=$(terraform -chdir=terraform/bootstrap/"${1}" output -raw packer_client_id)
-    PKR_VAR_AZURE_CLIENT_SECRET=$(terraform -chdir=terraform/bootstrap/"${1}" output -raw packer_client_secret)
+    PKR_VAR_AZURE_CLIENT_ID=$(terraform -chdir=terraform/bootstrap/azure output -raw packer_client_id)
+    PKR_VAR_AZURE_CLIENT_SECRET=$(terraform -chdir=terraform/bootstrap/azure output -raw packer_client_secret)
     echo "-----------"
     echo "Update your environment variables with..."
     echo "export PKR_VAR_AZURE_CLIENT_ID=${PKR_VAR_AZURE_CLIENT_ID}"
@@ -23,16 +23,16 @@ function get_azure_packer_variables() {
 
 function get_aws_packer_variables() {
     _information "Retrieving variables for AWS Packer..."
-    PKR_VAR_AWS_ACCESS_KEY=$(terraform -chdir=terraform/bootstrap/"${1}" output -raw packer_access_key)
-    PKR_VAR_AWS_SECRET_KEY=$(terraform -chdir=terraform/bootstrap/"${1}" output -raw packer_secret_key)
+    PKR_VAR_AWS_ACCESS_KEY=$(terraform -chdir=terraform/bootstrap/aws output -raw packer_access_key)
+    PKR_VAR_AWS_SECRET_KEY=$(terraform -chdir=terraform/bootstrap/aws output -raw packer_secret_key)
     echo "-----------"
     echo "Update your environment variables with..."
     echo "export PKR_VAR_AWS_ACCESS_KEY=${PKR_VAR_AWS_ACCESS_KEY}"
     echo "export PKR_VAR_AWS_SECRET_KEY=${PKR_VAR_AWS_SECRET_KEY}"
     echo "-----------"
 
-    VPC_ID=$(terraform -chdir=terraform/bootstrap/"${1}" output vpc_id)
-    SUBNET_ID=$(terraform -chdir=terraform/bootstrap/"${1}" output packer_subnet_id)
+    VPC_ID=$(terraform -chdir=terraform/bootstrap/aws output vpc_id)
+    SUBNET_ID=$(terraform -chdir=terraform/bootstrap/aws output packer_subnet_id)
     echo "-----------"
     echo "Update your packer variables with..."
     echo "vpc_id=${VPC_ID}"
@@ -43,7 +43,7 @@ function get_aws_packer_variables() {
 
 function get_gcp_packer_variables() {
     _information "Retrieving variables for GCP Packer..."
-    terraform -chdir=terraform/bootstrap/"${1}" output -raw packer_private_key | base64 --decode > packer/auth.json
+    terraform -chdir=terraform/bootstrap/gcp output -raw packer_private_key | base64 --decode > packer/auth.json
     echo "-----------"
     echo "Update your environment variables with..."
     echo "export PKR_VAR_GCP_ACCOUNT_CREDENTIALS=./packer/auth.json"

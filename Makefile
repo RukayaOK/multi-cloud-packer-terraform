@@ -17,20 +17,6 @@ else
     $(error $(red)Variable CLOUD is not set to one of the following: $(CLOUD_OPTS)$(reset))
 endif
 
-BOOTSTRAP_OR_TEST_OPTS := bootstrap test
-ifneq ($(filter $(BOOTSTRAP_OR_TEST),$(BOOTSTRAP_OR_TEST_OPTS)),)
-    $(info $(yellow)Bootstrap or Test: $(BOOTSTRAP_OR_TEST)$(reset))
-else
-    $(error $(red)Variable BOOTSTRAP_OR_TEST is not set to one of the following: $(BOOTSTRAP_OR_TEST_OPTS)$(reset))
-endif
-
-# cloudflare only run when testing images so BOOTSTRAP_OR_TEST=test if CLOUD=cloudflare
-ifeq ($(CLOUD),cloudflare)
-ifeq ($(BOOTSTRAP_OR_TEST),bootstrap)
-    $(error $(red)No Clouflare Terraform to Bootstrap$(reset))
-endif
-endif
-
 # Based on the CLOUD variable \
 set the cloud-specific terraform and packer variables to validate
 ifeq ($(strip $(CLOUD)),azure) 
@@ -56,6 +42,20 @@ ifneq ($(filter $(RUNTIME_ENV),$(RUNTIME_ENV_OPTS)),)
     $(info $(yellow)Runtime Environment: $(RUNTIME_ENV)$(reset))
 else
     $(error $(red)Variable RUNTIME_ENV is not set to one of the following: $(RUNTIME_ENV_OPTS)$(reset))
+endif
+
+BOOTSTRAP_OR_TEST_OPTS := bootstrap test
+ifneq ($(filter $(BOOTSTRAP_OR_TEST),$(BOOTSTRAP_OR_TEST_OPTS)),)
+    $(info $(yellow)Bootstrap or Test: $(BOOTSTRAP_OR_TEST)$(reset))
+else
+    $(error $(red)Variable BOOTSTRAP_OR_TEST is not set to one of the following: $(BOOTSTRAP_OR_TEST_OPTS)$(reset))
+endif
+
+# cloudflare only run when testing images so BOOTSTRAP_OR_TEST=test if CLOUD=cloudflare
+ifeq ($(CLOUD),cloudflare)
+ifeq ($(BOOTSTRAP_OR_TEST),bootstrap)
+    $(error $(red)No Clouflare Terraform to Bootstrap$(reset))
+endif
 endif
 
 ifeq ($(BOOTSTRAP_OR_TEST),bootstrap)
@@ -209,7 +209,7 @@ endif
 packer-image: 
 # Ensure the IMAGE variable is set. This is used to: \
 Determine what packer image to build
-IMAGE_OPTS := nginx elasticsearch
+IMAGE_OPTS := nginx
 ifneq ($(filter $(IMAGE),$(IMAGE_OPTS)),)
     $(info $(yellow)Image: $(IMAGE)$(reset))
 else
@@ -246,7 +246,7 @@ endif
 .PHONY: packer-delete
 packer-delete: 		## Deletes Packer Image [ARG: IMAGE_NAME="<Image Name>"]
 ifeq ($(strip $(RUNTIME_ENV)),local)
-	sh ./helpers/delete_image.sh delete_${CLOUD}_image ${CLOUD} ${TERRAFORM_PATH} $$IMAGE_NAME $$
+	sh ./helpers/delete_image.sh delete_${CLOUD}_image ${CLOUD} ${TERRAFORM_PATH} $$IMAGE_NAME
 else ifeq ($(strip $(RUNTIME_ENV)),container)
 	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/delete_image.sh delete_${CLOUD}_image $$IMAGE_NAME
 endif
@@ -270,9 +270,9 @@ endif
 .PHONY: packer-variables
 packer-variables: 		## Get variables for packer
 ifeq ($(strip $(RUNTIME_ENV)),local)
-	sh ./helpers/get_packer_variables.sh get_${CLOUD}_packer_variables ${CLOUD}
+	sh ./helpers/get_packer_variables.sh get_${CLOUD}_packer_variables
 else ifeq ($(strip $(RUNTIME_ENV)),container)
-	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/get_packer_variables.sh get_${CLOUD}_packer_variables ${CLOUD}
+	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/get_packer_variables.sh get_${CLOUD}_packer_variables
 endif
 
 .PHONY: packer-variables-all
