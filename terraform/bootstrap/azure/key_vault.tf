@@ -32,26 +32,38 @@ resource "azurerm_key_vault" "packer_key_vault" {
   }
 }
 
+resource "null_resource" "previous" {}
+
+resource "time_sleep" "wait_30_seconds" {
+  depends_on = [null_resource.previous]
+
+  create_duration = "20s"
+}
+
 resource "azurerm_key_vault_secret" "packer_client_id" {
   name         = "packer-client-id"
   value        = azuread_application.packer.application_id
   key_vault_id = azurerm_key_vault.packer_key_vault.id
+  depends_on   = [time_sleep.wait_30_seconds]
 }
 
 resource "azurerm_key_vault_secret" "packer_client_secret" {
   name         = "packer-client-secret"
   value        = azuread_service_principal_password.packer.value
   key_vault_id = azurerm_key_vault.packer_key_vault.id
+  depends_on   = [time_sleep.wait_30_seconds]
 }
 
 resource "azurerm_key_vault_secret" "packer_subscription_id" {
   name         = "packer-subscription-id"
   value        = data.azurerm_client_config.current.subscription_id
   key_vault_id = azurerm_key_vault.packer_key_vault.id
+  depends_on   = [time_sleep.wait_30_seconds]
 }
 
 resource "azurerm_key_vault_secret" "packer_tenant_id" {
   name         = "packer-tenant-id"
   value        = data.azurerm_client_config.current.tenant_id
   key_vault_id = azurerm_key_vault.packer_key_vault.id
+  depends_on   = [time_sleep.wait_30_seconds]
 }

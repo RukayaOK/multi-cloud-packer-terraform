@@ -10,7 +10,7 @@ packer_shared_image_gallery_resource_group = "packer-shared-image-gallery-rg"
 
 # Application
 packer_azuread_application = "packer-sp-app"
-image_delete_role          = "image-version-delete-role-2"
+image_delete_role          = "image-version-delete-role-4"
 
 # Key Vault
 packer_key_vault = "mypackerkv42"

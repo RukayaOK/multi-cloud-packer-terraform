@@ -1,8 +1,8 @@
 terraform {
   backend "azurerm" {
-    resource_group_name  = "some-rg-3"
-    storage_account_name = "somesgterahs"
-    container_name       = "tfstates"
-    key                  = "azure-packer-bootstrap.tfstate"
+    resource_group_name  = "my-resource-group"
+    storage_account_name = "uniquenamme1234"
+    container_name       = "somecontainer1234"
+    key                  = "tf-states"
   }
 }
