@@ -42,11 +42,6 @@ variable "github_repository" {
   type        = string
   description = "Name of the github repository"
 }
-variable "github_environment" {
-  type        = string
-  default     = ""
-  description = "Name of github envivonment for azure image pipeline. Only relevant for github organisations."
-}
 
 variable "packer_build_vnet" {
   type        = string

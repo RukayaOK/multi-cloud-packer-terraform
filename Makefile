@@ -245,6 +245,14 @@ else ifeq ($(strip $(RUNTIME_ENV)),container)
 	docker exec -it ${CLOUD}-terraform-packer packer fmt packer/${IMAGE}
 endif
 
+.PHONY: packer-variables
+packer-variables: 		## Get variables for packer
+ifeq ($(strip $(RUNTIME_ENV)),local)
+	sh ./helpers/get_packer_variables.sh get_${CLOUD}_packer_variables
+else ifeq ($(strip $(RUNTIME_ENV)),container)
+	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/get_packer_variables.sh get_${CLOUD}_packer_variables
+endif
+
 .PHONY: packer-validate
 packer-validate: packer-init		## Validates Packer Image
 ifeq ($(strip $(RUNTIME_ENV)),local)
@@ -283,14 +291,6 @@ ifeq ($(strip $(RUNTIME_ENV)),local)
 	packer build -var-file=packer/${IMAGE}/azure.pkrvars.hcl -var-file=packer/${IMAGE}/aws.pkrvars.hcl -var-file=packer/${IMAGE}/gcp.pkrvars.hcl packer/${IMAGE}
 else ifeq ($(strip $(RUNTIME_ENV)),container)
 	docker exec -it ${CLOUD}-terraform-packer packer build -var-file=packer/${IMAGE}/azure.pkrvars.hcl -var-file=packer/${IMAGE}/aws.pkrvars.hcl -var-file=packer/${IMAGE}/gcp.pkrvars.hcl packer/${IMAGE}
-endif
-	
-.PHONY: packer-variables
-packer-variables: 		## Get variables for packer
-ifeq ($(strip $(RUNTIME_ENV)),local)
-	sh ./helpers/get_packer_variables.sh get_${CLOUD}_packer_variables
-else ifeq ($(strip $(RUNTIME_ENV)),container)
-	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/get_packer_variables.sh get_${CLOUD}_packer_variables
 endif
 
 .PHONY: packer-variables-all
