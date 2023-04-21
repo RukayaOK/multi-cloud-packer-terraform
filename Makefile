@@ -89,7 +89,7 @@ docker-stop:					## Stops and Remove the docker container
 	docker rm ${CLOUD}-terraform-packer
 
 .PHONY: docker-restart
-docker-restart: stop start			## Restart the docker container
+docker-restart: docker-stop docker-start			## Restart the docker container
 
 .PHONY: docker-exec
 docker-exec: docker-start				## Runs the docker container
@@ -100,7 +100,7 @@ create-terra-boostrap:			## Bootstrap Terraform
 ifeq ($(strip $(RUNTIME_ENV)),local)
 	sh ./helpers/terraform-bootstrap/${CLOUD}.sh create
 else ifeq ($(strip $(RUNTIME_ENV)),container)
-	make restart
+	make docker-restart
 	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/terraform-bootstrap/${CLOUD}.sh create
 endif
 
@@ -109,7 +109,7 @@ destroy-terra-boostrap:			## Bootstrap Terraform
 ifeq ($(strip $(RUNTIME_ENV)),local)
 	sh ./helpers/terraform-bootstrap/${CLOUD}.sh destroy
 else ifeq ($(strip $(RUNTIME_ENV)),container)
-	make restart
+	make docker-restart
 	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/terraform-bootstrap/${CLOUD}.sh destroy
 endif
 
@@ -124,7 +124,7 @@ ifeq ($(strip $(RUNTIME_ENV)),local)
 	terraform -chdir=${TERRAFORM_PATH} init
 	terraform -chdir=${TERRAFORM_PATH} fmt --recursive
 else ifeq ($(strip $(RUNTIME_ENV)),container)
-	make restart
+	make docker-restart
 	docker exec -it ${CLOUD}-terraform-packer terraform -chdir=${TERRAFORM_PATH} init
 endif
 
@@ -240,7 +240,7 @@ ifeq ($(strip $(RUNTIME_ENV)),local)
 	packer init packer/${IMAGE}
 	packer fmt packer/${IMAGE}
 else ifeq ($(strip $(RUNTIME_ENV)),container)
-	make restart
+	make docker-restart
 	docker exec -it ${CLOUD}-terraform-packer packer init packer/${IMAGE} 
 	docker exec -it ${CLOUD}-terraform-packer packer fmt packer/${IMAGE}
 endif

@@ -17,7 +17,7 @@ packer_key_vault = "mypackerkv42"
 
 # GitHub 
 github_repository  = "RukayaOK/multi-cloud-packer-terraform"
-github_environment = "AZURE"
+#github_environment = "AZURE"
 
 # Azure Network
 packer_build_vnet                 = "packer-build-vnet"

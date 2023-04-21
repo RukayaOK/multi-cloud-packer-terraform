@@ -184,7 +184,7 @@ function terraform_output () {
   _information "----------------"
 
   _information "----------------"
-  _information "For backend.tf.."
+  _information "For backend.tf..."
   cat << EndOfMessage
 terraform {
   backend "azurerm" {

@@ -87,6 +87,20 @@ COPY packer ./packer
 COPY ansible ./ansible
 COPY helpers ./helpers
 
+
+ENV USER_ID=65535
+ENV GROUP_ID=65535
+ENV USER_NAME=non-root-user
+ENV GROUP_NAME=non-root-group
+
+RUN addgroup -g $GROUP_ID $GROUP_NAME && \
+    adduser --shell /sbin/nologin --disabled-password \
+    --no-create-home --uid $USER_ID --ingroup $GROUP_NAME $USER_NAME && \
+    chown -R $USER_NAME:$GROUP_NAME ./terraform && \
+    chown -R $USER_NAME:$GROUP_NAME ./packer && \
+    chown -R $USER_NAME:$GROUP_NAME ./ansible && \
+    chown -R $USER_NAME:$GROUP_NAME ./helpers
+
 ###########################
 ####### AZURE LAYER #######
 ###########################
@@ -97,17 +111,7 @@ ENV AZURE_CLI_VERSION=2.43.0
 # Install Azure CLI 
 RUN pip3 install --no-cache-dir -U azure-cli==$AZURE_CLI_VERSION
 
-
-#################################
-####### ADD NON-ROOT USER #######
-#################################
-# RUN groupadd --gid 1001 nonroot \
-#   # user needs a home folder to store aws credentials
-#   && useradd --gid nonroot --create-home --uid 1001 nonroot \
-#   && chown nonroot:nonroot /workspace
-# USER nonroot
-
-# CMD ["bash"]
+USER $USER_NAME
 
 #########################
 ####### AWS LAYER #######
@@ -120,6 +124,8 @@ ENV AWS_CLI_VERSION=2.9.2
 # Install AWS CLI 
 RUN pip3 install --no-cache-dir setuptools==${SETUP_TOOLS} \
     && pip3 install --no-cache-dir awscli==${AWS_CLI_VERSION}
+
+USER $USER_NAME
 
 #########################
 ####### GCP LAYER #######
@@ -141,3 +147,5 @@ RUN wget -qP "${GCLOUD_DEST}"/ https://dl.google.com/dl/cloudsdk/channels/rapid/
 
 # Add Google Cloud to PATH
 ENV PATH ${GCLOUD_DEST}/google-cloud-sdk/bin:$PATH
+
+USER $USER_NAME
