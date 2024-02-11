@@ -95,8 +95,8 @@ docker-restart: docker-stop docker-start			## Restart the docker container
 docker-exec: docker-start				## Runs the docker container
 	docker exec -it ${CLOUD}-terraform-packer bash
 
-.PHONY: create-terra-boostrap
-create-terra-boostrap:			## Bootstrap Terraform
+.PHONY: create-terra-bootstrap
+create-terra-bootstrap:			## Bootstrap Terraform
 ifeq ($(strip $(RUNTIME_ENV)),local)
 	sh ./helpers/terraform-bootstrap/${CLOUD}.sh create
 else ifeq ($(strip $(RUNTIME_ENV)),container)
@@ -104,8 +104,8 @@ else ifeq ($(strip $(RUNTIME_ENV)),container)
 	docker exec -it ${CLOUD}-terraform-packer sh ./helpers/terraform-bootstrap/${CLOUD}.sh create
 endif
 
-.PHONY: destroy-terra-boostrap
-destroy-terra-boostrap:			## Bootstrap Terraform
+.PHONY: destroy-terra-bootstrap
+destroy-terra-bootstrap:			## Bootstrap Terraform
 ifeq ($(strip $(RUNTIME_ENV)),local)
 	sh ./helpers/terraform-bootstrap/${CLOUD}.sh destroy
 else ifeq ($(strip $(RUNTIME_ENV)),container)
